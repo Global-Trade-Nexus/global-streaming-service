@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Streaming Service - Earn While You Stream</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root { --primary: #00ff9d; --dark: #0a0a0a; --card: #161616; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: #eee; line-height: 1.6; }
+
+    /* Landing Page */
+    .landing { display: block; }
+    header {
+      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('https://source.unsplash.com/random/1920x1080/?cinema,money') center/cover;
+      height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
+    }
+    .logo { position: absolute; top: 30px; left: 50px; font-size: 2.3rem; font-weight: 800; color: var(--primary); }
+    .nav-btn { position: absolute; top: 30px; right: 50px; background: transparent; color: white; border: 2px solid var(--primary); padding: 10px 26px; border-radius: 50px; cursor: pointer; }
+
+    .hero h1 { font-size: 3.7rem; margin-bottom: 15px; }
+    .hero p { font-size: 1.35rem; max-width: 780px; margin: 20px auto; }
+
+    .earnings-tracker {
+      background: linear-gradient(135deg, #1a1a1a, #111);
+      padding: 40px 20px; border-radius: 20px; text-align: center; margin: 40px auto; max-width: 700px;
+    }
+
+    /* Dashboard */
+    .dashboard { display: none; }
+    .sidebar { width: 260px; background: #111; position: fixed; height: 100%; padding: 30px 20px; overflow-y: auto; }
+    .main-content { margin-left: 260px; padding: 30px; }
+
+    .nav-link {
+      display: flex; align-items: center; gap: 12px; padding: 14px 18px; color: #ccc;
+      text-decoration: none; border-radius: 10px; margin-bottom: 8px;
+    }
+    .nav-link:hover, .nav-link.active { background: #1f1f1f; color: var(--primary); }
+
+    .card { background: var(--card); border-radius: 16px; padding: 25px; margin-bottom: 30px; }
+    .balance { font-size: 2.8rem; font-weight: bold; color: var(--primary); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+
+    .live-card { background: #111; border-radius: 16px; padding: 20px; position: relative; }
+    .live-badge { position: absolute; top: 15px; right: 15px; background: #ff0000; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; }
+
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+
+    button { background: var(--primary); color: #000; border: none; padding: 12px 24px; border-radius: 50px; font-weight: bold; cursor: pointer; }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; height: auto; position: relative; }
+      .main-content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== LANDING PAGE ==================== -->
+  <div id="landing" class="landing">
+    <header>
+      <div class="logo">GLOBAL STREAM</div>
+      <button class="nav-btn" onclick="loginAndRedirect()">Login</button>
+      
+      <div class="hero">
+        <h1>Earn While You Stream</h1>
+        <p>Get paid real money for every minute you watch movies, series, live sports & TV channels.<br>One-time activation • Secure payments via Flutterwave</p>
+        <button onclick="document.getElementById('plans-section').scrollIntoView({ behavior: 'smooth' })}" class="btn-primary" style="padding:18px 55px; font-size:1.25rem;">
+          View Plans & Activate Now
+        </button>
+      </div>
+    </header>
+
+    <!-- Earnings Tracker -->
+    <section class="earnings-tracker">
+      <h2>Users Are Earning Right Now</h2>
+      <div style="font-size: 3.5rem; font-weight: bold; color: var(--primary);" id="live-earnings">$14,672.80</div>
+      <p style="color:#aaa;">Total Earnings Paid This Week</p>
+    </section>
+
+    <!-- Plans -->
+    <section id="plans-section">
+      <h2 style="color:var(--primary); text-align:center;">Choose Your Activation Plan</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Basic Plan</h3>
+          <div class="balance">₦8,500</div>
+          <p>Net: $0.70 per 10 mins</p>
+          <button onclick="payWithFlutterwave('Basic Plan', 8500, 'https://flutterwave.com/pay/activation_keycode')" style="width:100%; margin-top:15px;">Pay with Flutterwave</button>
+        </div>
+        <div class="card">
+          <h3>Standard Plan</h3>
+          <div class="balance">₦15,000</div>
+          <p>Net: $1.183 per 10 mins</p>
+          <button onclick="payWithFlutterwave('Standard Plan', 15000, 'https://flutterwave.com/pay/user_activation_fee')" style="width:100%; margin-top:15px;">Pay with Flutterwave</button>
+        </div>
+        <div class="card" style="border:2px solid var(--primary);">
+          <h3>Premium Plan <span style="color:var(--primary);">(Popular)</span></h3>
+          <div class="balance">₦25,000</div>
+          <p>Net: $1.596 per 10 mins</p>
+          <button onclick="payWithFlutterwave('Premium Plan', 25000, 'https://flutterwave.com/pay/key_code')" style="width:100%; margin-top:15px;">Pay with Flutterwave</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== DASHBOARD ==================== -->
+  <div id="dashboard" class="dashboard">
+
+    <div class="sidebar">
+      <div class="logo">GLOBAL STREAM</div>
+      <a href="#" class="nav-link active" onclick="showSection('home')"><i class="fas fa-home"></i> Home</a>
+      <a href="#" class="nav-link" onclick="showSection('live')"><i class="fas fa-tv"></i> Live TV</a>
+      <a href="#" class="nav-link" onclick="showSection('earnings')"><i class="fas fa-money-bill-wave"></i> Earnings</a>
+      <a href="#" class="nav-link" onclick="showSection('withdraw')"><i class="fas fa-hand-holding-usd"></i> Withdraw</a>
+      <a href="#" class="nav-link" onclick="showSection('plan')"><i class="fas fa-credit-card"></i> My Plan</a>
+      <a href="#" class="nav-link" onclick="showSection('referral')"><i class="fas fa-users"></i> Refer & Earn</a>
+      <a href="#" class="nav-link" onclick="showSection('profile')"><i class="fas fa-user"></i> Profile</a>
+    </div>
+
+    <div class="main-content">
+      <div class="header">
+        <h1>Welcome back, Victor 👋</h1>
+        <button onclick="logout()">Logout</button>
+      </div>
+
+      <!-- HOME -->
+      <div id="home-section">
+        <div class="grid">
+          <div class="card">
+            <p>Available Balance</p>
+            <div class="balance" id="available-balance">$124.50</div>
+          </div>
+          <div class="card">
+            <p>Total Net Earnings</p>
+            <div class="balance">$218.82</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE TV -->
+      <div id="live-section" style="display:none;">
+        <h2 style="color:var(--primary);">Live TV - Earn While Watching</h2>
+        <div class="live-card">
+          <span class="live-badge">LIVE</span>
+          <h3>Premier League Live</h3>
+          <p>Net Rate: <strong>$1.596 per 10 mins</strong></p>
+          <div style="margin:25px 0; font-size:2.2rem;">
+            Session: <strong id="session-earnings">$0.00</strong>
+          </div>
+          <button onclick="startLiveStreaming(this)" id="stream-btn" style="width:100%; padding:14px;">Start Streaming & Earning</button>
+        </div>
+      </div>
+
+      <!-- EARNINGS -->
+      <div id="earnings-section" style="display:none;">
+        <h2 style="color:var(--primary);">My Earnings</h2>
+        <div class="grid">
+          <div class="card"><p>Gross</p><div class="balance">$312.60</div></div>
+          <div class="card"><p>Platform Cut (30%)</p><div style="font-size:2rem;color:#ff6666;">$93.78</div></div>
+          <div class="card"><p>Net Earnings</p><div class="balance">$218.82</div></div>
+        </div>
+      </div>
+
+      <!-- WITHDRAW -->
+      <div id="withdraw-section" style="display:none;">
+        <h2 style="color:var(--primary);">Withdraw Funds</h2>
+        <div class="card">
+          <p>Available Balance</p>
+          <div class="balance" id="withdraw-balance">$124.50</div>
+          
+          <input type="number" id="withdraw-amount" placeholder="Amount in USD (Min $6)" style="width:100%; padding:14px; margin:20px 0; background:#222; border:none; border-radius:8px; color:white;">
+          
+          <button onclick="requestWithdrawal()" style="width:100%; padding:14px; background:var(--primary); color:#000; border:none; border-radius:50px;">
+            Request Withdrawal
+          </button>
+        </div>
+
+        <h3 style="margin:25px 0 15px;">Withdrawal History</h3>
+        <div class="card" id="withdrawal-history" style="min-height:200px;"></div>
+      </div>
+
+      <!-- MY PLAN -->
+      <div id="plan-section" style="display:none;">
+        <h2 style="color:var(--primary);">My Plan</h2>
+        <div class="card">
+          <h3>Premium Plan <span style="color:var(--primary);">(Active)</span></h3>
+          <p><strong>Net Rate:</strong> $1.596 per 10 minutes</p>
+          <p>Valid until: 28 April 2027</p>
+        </div>
+      </div>
+
+      <!-- REFERRAL & PROFILE (short) -->
+      <div id="referral-section" style="display:none;">
+        <h2 style="color:var(--primary);">Refer & Earn ₦2,000</h2>
+        <div class="card">
+          <p>Your Referral Link:</p>
+          <p style="background:#1f1f1f; padding:15px; border-radius:10px; word-break:break-all;">https://globalstream.com/ref/victor244</p>
+        </div>
+      </div>
+
+      <div id="profile-section" style="display:none;">
+        <h2 style="color:var(--primary);">Profile</h2>
+        <div class="card">
+          <p><strong>Name:</strong> Victor Nandang</p>
+          <p><strong>Email:</strong> globaltradenexusadmin@gmail.com</p>
+          <p><strong>Phone:</strong> +234 704 860 4239</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let availableBalance = 124.50;
+    let sessionEarnings = 0;
+    let interval = null;
+    let withdrawalHistory = [];
+
+    function updateBalance() {
+      document.getElementById('available-balance').textContent = '$' + availableBalance.toFixed(2);
+      document.getElementById('withdraw-balance').textContent = '$' + availableBalance.toFixed(2);
+    }
+
+    function showSection(section) {
+      document.querySelectorAll('#dashboard .main-content > div').forEach(div => div.style.display = 'none');
+      document.getElementById(section + '-section').style.display = 'block';
+    }
+
+    function loginAndRedirect() {
+      const email = prompt("Enter your email:", "victor@globalstream.com");
+      if (email) {
+        alert("✅ Login Successful! Welcome back.");
+        document.getElementById('landing').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'flex';
+        showSection('home');
+        updateBalance();
+      }
+    }
+
+    function logout() {
+      if (confirm("Logout?")) {
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('landing').style.display = 'block';
+      }
+    }
+
+    function startLiveStreaming(btn) {
+      if (interval) clearInterval(interval);
+      sessionEarnings = 0;
+      document.getElementById('session-earnings').textContent = '$0.00';
+      btn.textContent = "🎥 Streaming & Earning...";
+      btn.style.background = "#00cc7a";
+
+      interval = setInterval(() => {
+        sessionEarnings += 0.00266;
+        document.getElementById('session-earnings').textContent = '$' + sessionEarnings.toFixed(2);
+      }, 1000);
+    }
+
+    function payWithFlutterwave(planName, amount, link) {
+      if (confirm(`Pay ₦${amount.toLocaleString()} for ${planName}?
+
+You will be redirected to Flutterwave.`)) {
+        window.open(link, '_blank');
+        setTimeout(() => {
+          alert("After successful payment, send proof to:\nglobaltradenexusadmin@gmail.com or +234 704 860 4239");
+        }, 1000);
+      }
+    }
+
+    function requestWithdrawal() {
+      const amount = parseFloat(document.getElementById('withdraw-amount').value);
+      if (!amount || amount < 6) {
+        alert("Minimum withdrawal is $6.");
+        return;
+      }
+      if (amount > availableBalance) {
+        alert("Insufficient balance!");
+        return;
+      }
+
+      if (confirm(`Request \[ {amount.toFixed(2)} withdrawal?`)) {
+        availableBalance -= amount;
+        updateBalance();
+
+        withdrawalHistory.unshift({
+          amount: amount.toFixed(2),
+          date: new Date().toLocaleDateString(),
+          status: "Processing"
+        });
+
+        renderHistory();
+        alert(`Withdrawal request of \]{amount.toFixed(2)} submitted successfully!\nStatus: Processing (24-48 hours)`);
+        document.getElementById('withdraw-amount').value = '';
+      }
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('withdrawal-history');
+      container.innerHTML = withdrawalHistory.map(item => `
+        <div class="history-item" style="padding:12px; background:#1f1f1f; margin-bottom:8px; border-radius:8px;">
+          <strong>$${item.amount}</strong> — ${item.date} 
+          <span style="float:right; color:#ffaa00;">${item.status}</span>
+        </div>
+      `).join('');
+    }
+
+    // Initialize Earnings Counter
+    setInterval(() => {
+      let total = parseFloat(document.getElementById('live-earnings').textContent.replace(/[$,]/g, '')) || 14672;
+      total += Math.random() * 80 + 30;
+      document.getElementById('live-earnings').textContent = '$' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }, 2800);
+  </script>
+</body>
+</html>
